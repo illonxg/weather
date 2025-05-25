@@ -1,26 +1,30 @@
 async function getWeather() {
-    const city = document.getElementById('cityInput').value;
-    const apiKey = 'YOUR_API_KEY'; // 🔁 Заміни на свій ключ
-    const url = ;
+    const city = document.getElementById('cityInput').value.trim();
+    const apiKey = 'fe422ef8afa44e64a74140551252505';
+    const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&lang=uk`;
+  
+    const weatherDiv = document.getElementById('weather');
+  
+    if (!city) {
+      weatherDiv.innerHTML = `<span style="color: yellow;">⚠️ Введіть назву міста.</span>`;
+      return;
+    }
   
     try {
       const response = await fetch(url);
       if (!response.ok) throw new Error("Місто не знайдено");
+  
       const data = await response.json();
   
-      const temp = data.main.temp;
-      const description = data.weather[0].description;
-      const humidity = data.main.humidity;
-      const wind = data.wind.speed;
-  
-      document.getElementById('weather').innerHTML = `
-        <strong>${city}</strong><br>
-        Температура: ${temp} °C<br>
-        Погода: ${description}<br>
-        Вологість: ${humidity}%<br>
-        Вітер: ${wind} м/с
+      weatherDiv.innerHTML = `
+        <h2>${data.location.name}, ${data.location.country}</h2>
+        <p>🌡 Температура: ${data.current.temp_c} °C</p>
+        <p>☁️ Погода: ${data.current.condition.text}</p>
+        <p>💧 Вологість: ${data.current.humidity}%</p>
+        <p>🌬 Вітер: ${data.current.wind_kph} км/год</p>
+        <img src="https:${data.current.condition.icon}" alt="icon">
       `;
     } catch (error) {
-      document.getElementById('weather').innerText = `Помилка: ${error.message}`;
+      weatherDiv.innerHTML = `<span style="color: red;">❌ ${error.message}</span>`;
     }
   }
