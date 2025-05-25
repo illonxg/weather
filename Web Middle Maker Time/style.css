@@ -2,3 +2,41 @@
   margin: 0;
   padding: 0;
 }
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to right, #74ebd5, #acb6e5);
+  color: #333;
+  text-align: center;
+  padding: 40px;
+}
+
+input, button {
+  padding: 10px;
+  margin: 10px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+}
+
+input {
+  width: 200px;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+#weather {
+  margin-top: 20px;
+  font-size: 20px;
+  background-color: #ffffffaa;
+  padding: 20px;
+  border-radius: 10px;
+  display: inline-block;
+}
