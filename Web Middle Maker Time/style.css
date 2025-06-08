@@ -1,13 +1,50 @@
 body {
   font-family: 'Arial', sans-serif;
-  background: linear-gradient(to right, #6a11cb, #2575fc);
+  background: linear-gradient(to right, #6a11cb, #2575fc); /* Дефолтний фон */
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   margin: 0;
   color: #fff;
+  overflow: hidden; /* Щоб приховати краплі/сніжинки за межами екрану */
+  position: relative; /* Для позиціонування шарів анімації */
 }
+
+/* Переходи для зміни фону */
+body {
+  transition: background 1s ease-in-out;
+}
+
+/* Стилі фону для різних типів погоди */
+body.clear {
+  background: linear-gradient(to right, #FFD700, #FFA500); /* Сонячно: теплий, жовтий */
+}
+
+body.clouds {
+  background: linear-gradient(to right, #7F8C8D, #BDC3C7); /* Хмарно: сірі відтінки */
+}
+
+body.rain {
+  background: linear-gradient(to right, #34495E, #2C3E50); /* Дощ: темні, сині відтінки */
+}
+
+body.drizzle {
+  background: linear-gradient(to right, #5D6D7E, #7F8C8D); /* Мряка: трохи світліше за дощ */
+}
+
+body.thunderstorm {
+  background: linear-gradient(to right, #2C3E50, #1C2833); /* Гроза: дуже темний */
+}
+
+body.snow {
+  background: linear-gradient(to right, #BDC3C7, #ECF0F1); /* Сніг: світлі, білі відтінки */
+}
+
+body.mist, body.smoke, body.haze, body.dust, body.fog, body.sand, body.ash, body.squall, body.tornado {
+  background: linear-gradient(to right, #95A5A6, #ABB2B9); /* Туман та інші атмосферні явища */
+}
+
 
 .weather-app {
   background-color: rgba(255, 255, 255, 0.2);
@@ -18,6 +55,8 @@ body {
   width: 90%;
   max-width: 400px;
   backdrop-filter: blur(10px);
+  z-index: 10; /* Переконаємося, що інтерфейс поверх анімації */
+  position: relative; /* Для коректного z-index */
 }
 
 h1 {
@@ -89,4 +128,59 @@ h1 {
 .weather-display .temperature {
   font-size: 2.5em;
   font-weight: bold;
+}
+
+/* Стилі для шарів анімації */
+.weather-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* Дозволяє клікам проходити крізь шар */
+  z-index: 5; /* Розміщуємо під інтерфейсом, але над фоном */
+  overflow: hidden;
+}
+
+/* Стилі для крапель дощу */
+.drop {
+  position: absolute;
+  width: 2px;
+  height: 10px;
+  background: rgba(174, 194, 224, 0.8);
+  border-radius: 50%;
+  animation: fall linear infinite;
+  transform: rotate(15deg); /* Щоб виглядали як краплі під кутом */
+}
+
+@keyframes fall {
+  0% {
+      transform: translateY(-100px) translateX(0) rotate(15deg);
+      opacity: 0.8;
+  }
+  100% {
+      transform: translateY(100vh) translateX(30px) rotate(15deg);
+      opacity: 0;
+  }
+}
+
+/* Стилі для сніжинок */
+.flake {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  animation: snowfall linear infinite;
+}
+
+@keyframes snowfall {
+  0% {
+      transform: translateY(-20px) translateX(0);
+      opacity: 1;
+  }
+  100% {
+      transform: translateY(100vh) translateX(20px);
+      opacity: 0;
+  }
 }
