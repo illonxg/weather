@@ -1,44 +1,92 @@
 body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(to right, #2980b9, #6dd5fa);
-  color: #fff;
-  text-align: center;
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(to right, #6a11cb, #2575fc);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
   margin: 0;
-  padding: 0;
+  color: #fff;
 }
 
-.container {
-  margin-top: 100px;
-  padding: 20px;
+.weather-app {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+  backdrop-filter: blur(10px);
 }
 
-input {
-  padding: 10px;
-  font-size: 16px;
-  width: 200px;
+h1 {
+  margin-bottom: 25px;
+  font-size: 2.2em;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.search-box {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 25px;
+}
+
+#city-input {
+  padding: 12px 15px;
   border: none;
-  border-radius: 5px;
+  border-radius: 25px;
+  outline: none;
+  font-size: 1em;
+  width: 70%;
+  margin-right: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  color: #333;
 }
 
-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  margin-left: 10px;
-  background-color: #3498db;
+#city-input::placeholder {
+  color: #888;
+}
+
+#search-button {
+  padding: 12px 20px;
   border: none;
-  border-radius: 5px;
+  border-radius: 25px;
+  background-color: #00bcd4;
   color: white;
+  font-size: 1em;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-button:hover {
-  background-color: #2980b9;
+#search-button:hover {
+  background-color: #0097a7;
 }
 
-#weather {
-  margin-top: 30px;
-  font-size: 18px;
-  background-color: rgba(0,0,0,0.2);
+.weather-display {
+  background-color: rgba(255, 255, 255, 0.1);
   padding: 20px;
   border-radius: 10px;
+  text-align: left;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.weather-display p {
+  margin: 5px 0;
+  font-size: 1.1em;
+}
+
+.weather-display h2 {
+  font-size: 2em;
+  margin-bottom: 10px;
+}
+
+.weather-display .temperature {
+  font-size: 2.5em;
+  font-weight: bold;
 }
