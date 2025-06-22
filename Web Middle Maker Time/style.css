@@ -1,166 +1,200 @@
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Змінимо шрифт */
-  background: linear-gradient(to right, #6a11cb, #2575fc); /* Дефолтний фон */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to right, #6a11cb, #2575fc);
   display: flex;
-  flex-direction: column; /* Змінимо напрямок для шапки */
-  justify-content: flex-start; /* Шапка зверху */
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
   min-height: 100vh;
   margin: 0;
   color: #fff;
-  overflow: hidden; 
-  position: relative; 
-  transition: background 1s ease-in-out; 
+  overflow: hidden;
+  position: relative;
+  transition: background 1s ease-in-out;
 }
 
 /* Стилі для головної шапки */
 .main-header {
   width: 100%;
-  background-color: rgba(0, 0, 0, 0.4); /* Напівпрозорий темний фон */
+  background-color: rgba(0, 0, 0, 0.4);
   padding: 20px 0;
   text-align: center;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  position: fixed; /* Фіксуємо шапку вгорі */
+  position: fixed;
   top: 0;
   left: 0;
-  z-index: 20; /* Щоб була поверх усього */
-  backdrop-filter: blur(5px); /* Ефект розмиття */
+  z-index: 20;
+  backdrop-filter: blur(5px);
+  transform: translateY(-100%);
+  opacity: 0;
+  transition: none;
+}
+
+.main-header.animate-in {
+  animation: slideDownIn 0.8s ease-out forwards;
+  animation-delay: 0.2s;
 }
 
 .main-header h1 {
   margin: 0;
-  font-size: 2.8em; /* Збільшимо розмір заголовка */
+  font-size: 2.8em;
   color: #fff;
   text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
-  letter-spacing: 1.5px; /* Невеликий інтервал між літерами */
+  letter-spacing: 1.5px;
 }
 
 /* Відступимо основний контент від шапки */
 .weather-app {
-  margin-top: 120px; /* Відступ від фіксованої шапки */
-  background-color: rgba(255, 255, 255, 0.15); /* Трохи менш прозорий */
+  margin-top: 120px;
+  background-color: rgba(255, 255, 255, 0.15);
   padding: 30px;
   border-radius: 15px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); /* Сильніша тінь */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
   text-align: center;
-  width: 100%;
-  max-width: 650px; /* Збільшимо максимальну ширину */
-  backdrop-filter: blur(12px); /* Сильніше розмиття */
-  z-index: 10; 
-  position: relative; 
-  max-height: calc(100vh - 150px); /* Обмежимо висоту, враховуючи шапку */
-  overflow-y: auto; 
-  transition: all 0.3s ease; /* Додамо плавний перехід для розміру/тіні */
+  width: 90%;
+  max-width: 650px;
+  backdrop-filter: blur(12px);
+  z-index: 10;
+  position: relative;
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+  transition: all 0.3s ease;
+  transform: translateY(50px);
+  opacity: 0;
+}
+
+.weather-app.animate-in {
+  animation: fadeInSlideUp 0.8s ease-out forwards;
+  animation-delay: 0.5s;
 }
 
 /* Прибираємо старий H1 з weather-app, оскільки він тепер у шапці */
 .weather-app h1 {
-  display: none; 
+  display: none;
 }
 
 .search-box {
   display: flex;
   justify-content: center;
-  margin-bottom: 30px; /* Більший відступ */
+  margin-bottom: 30px;
 }
 
 #city-input {
-  padding: 14px 20px; /* Збільшимо падінги */
+  padding: 14px 20px;
   border: none;
-  border-radius: 30px; /* Більш округлі */
+  border-radius: 30px;
   outline: none;
-  font-size: 1.1em; /* Збільшимо шрифт */
+  font-size: 1.1em;
   width: 70%;
-  margin-right: 15px; /* Більший відступ */
-  background-color: rgba(255, 255, 255, 0.95); /* Майже непрозорий білий */
+  margin-right: 15px;
+  background-color: rgba(255, 255, 255, 0.95);
   color: #333;
   box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+  transform: scale(0.9);
+  opacity: 0;
 }
 
-#city-input::placeholder {
-  color: #777;
+#city-input.animate-in {
+  animation: scaleIn 0.5s ease-out forwards;
+  animation-delay: 1.0s;
 }
+
 
 #search-button {
-  padding: 14px 25px; /* Збільшимо падінги */
+  padding: 14px 25px;
   border: none;
-  border-radius: 30px; /* Більш округлі */
+  border-radius: 30px;
   background-color: #00bcd4;
   color: white;
-  font-size: 1.1em; /* Збільшимо шрифт */
+  font-size: 1.1em;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease; /* Додамо transform */
+  transition: background-color 0.3s ease, transform 0.2s ease;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: scale(0.9);
+  opacity: 0;
+}
+
+#search-button.animate-in {
+  animation: scaleIn 0.5s ease-out forwards;
+  animation-delay: 1.2s;
 }
 
 #search-button:hover {
   background-color: #0097a7;
-  transform: translateY(-2px); /* Легкий підйом при наведенні */
+  transform: translateY(-2px);
 }
 
 .weather-display {
   background-color: rgba(255, 255, 255, 0.1);
-  padding: 25px; /* Збільшимо падінги */
-  border-radius: 12px; /* Більш округлі */
-  text-align: center; /* Центруємо текст */
+  padding: 25px;
+  border-radius: 12px;
+  text-align: center;
   min-height: 120px;
-  margin-bottom: 25px; /* Відступ до прогнозу */
+  margin-bottom: 25px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  transform: translateY(20px);
+  opacity: 0;
 }
 
+.weather-display.animate-in {
+  animation: fadeInSlideUp 0.6s ease-out forwards;
+  animation-delay: 1.5s;
+}
+
+
 .weather-display p {
-  margin: 8px 0; /* Збільшимо відступи між параграфами */
+  margin: 8px 0;
   font-size: 1.15em;
   line-height: 1.4;
 }
 
 .weather-display h2 {
-  font-size: 2.2em; /* Трохи збільшимо розмір */
+  font-size: 2.2em;
   margin-bottom: 12px;
 }
 
 .weather-display .temperature {
-  font-size: 3em; /* Збільшимо розмір температури */
+  font-size: 3em;
   font-weight: bold;
   margin: 10px 0;
   text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
 }
 
 .weather-display img {
-  width: 90px; /* Збільшимо розмір іконки */
+  width: 90px;
   height: 90px;
   margin-bottom: 5px;
 }
 
 /* Стилі для шарів анімації */
 .weather-layer {
-  position: fixed; /* Змінимо на fixed, щоб покривав весь екран, враховуючи прокрутку */
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none; 
-  z-index: 5; 
+  pointer-events: none;
+  z-index: 5;
   overflow: hidden;
-  display: none; /* За замовчуванням приховано */
+  display: none;
 }
 
-.rain-drop { /* Змінив назву класу для кращої семантики */
+/* Оновлені стилі для крапель дощу */
+.drop {
   position: absolute;
-  background: rgba(174, 194, 224, 0.7);
+  background: rgba(174, 194, 224, 0.6); /* Зробимо трохи прозорішим */
   border-radius: 50%;
   animation: fall linear infinite;
   transform-origin: bottom center;
-  width: 2px;
-  height: 15px;
+  /* Розміри будуть встановлені JS для варіативності */
 }
 
 @keyframes fall {
   0% {
-      transform: translateY(-100px) translateX(0) rotate(15deg);
+      transform: translateY(-10vh) translateX(0) rotate(15deg); /* Починаємо вище */
       opacity: 0.8;
   }
   100% {
@@ -169,18 +203,18 @@ body {
   }
 }
 
-.snow-flake { /* Змінив назву класу для кращої семантики */
+/* Оновлені стилі для сніжинок */
+.flake {
   position: absolute;
   background: rgba(255, 255, 255, 0.8);
   border-radius: 50%;
   animation: snowfall linear infinite;
-  width: 5px;
-  height: 5px;
+  /* Розміри будуть встановлені JS для варіативності */
 }
 
 @keyframes snowfall {
   0% {
-      transform: translateY(-20px) translateX(0);
+      transform: translateY(-10vh) translateX(0); /* Починаємо вище */
       opacity: 1;
   }
   100% {
@@ -196,6 +230,13 @@ body {
   border-radius: 12px;
   margin-top: 25px;
   text-align: center;
+  transform: translateY(20px);
+  opacity: 0;
+}
+
+.forecast-display.animate-in {
+  animation: fadeInSlideUp 0.6s ease-out forwards;
+  animation-delay: 1.8s;
 }
 
 .forecast-display h2 {
@@ -209,37 +250,43 @@ body {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 20px; /* Більший простір між картками */
+  gap: 20px;
 }
 
 .forecast-card {
-  background-color: rgba(255, 255, 255, 0.18); /* Трохи темніше */
-  padding: 18px; /* Більші падінги */
+  background-color: rgba(255, 255, 255, 0.18);
+  padding: 18px;
   border-radius: 12px;
   text-align: center;
-  width: 130px; /* Трохи більша ширина */
-  flex-shrink: 0; 
+  width: 130px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Додамо переходи */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  transform: translateY(20px);
+  opacity: 0;
+}
+
+.forecast-card.animate-in {
+  animation: fadeInSlideUp 0.5s ease-out forwards;
 }
 
 .forecast-card:hover {
-  transform: translateY(-3px); /* Підйом при наведенні */
+  transform: translateY(-3px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
-.forecast-card h3 { /* Для дати/дня */
+.forecast-card h3 {
   font-size: 1.1em;
   margin-bottom: 8px;
   color: #eee;
 }
 
 .forecast-card img {
-  width: 70px; /* Збільшимо іконки */
+  width: 70px;
   height: 70px;
   margin: 8px 0;
 }
@@ -250,49 +297,50 @@ body {
 }
 
 /* Стилі фону для різних типів погоди */
-body.clear {
-  background: linear-gradient(to right, #FFD700, #FFA500); 
-}
-
-body.clouds {
-  background: linear-gradient(to right, #7F8C8D, #BDC3C7); 
-}
-
-body.rain {
-  background: linear-gradient(to right, #34495E, #2C3E50); 
-}
-
-body.drizzle {
-  background: linear-gradient(to right, #5D6D7E, #7F8C8D); 
-}
-
-body.thunderstorm {
-  background: linear-gradient(to right, #2C3E50, #1C2833); 
-}
-
-body.snow {
-  background: linear-gradient(to right, #BDC3C7, #ECF0F1); 
-}
-
+body.clear { background: linear-gradient(to right, #FFD700, #FFA500); }
+body.clouds { background: linear-gradient(to right, #7F8C8D, #BDC3C7); }
+body.rain { background: linear-gradient(to right, #34495E, #2C3E50); }
+body.drizzle { background: linear-gradient(to right, #5D6D7E, #7F8C8D); }
+body.thunderstorm { background: linear-gradient(to right, #2C3E50, #1C2833); }
+body.snow { background: linear-gradient(to right, #BDC3C7, #ECF0F1); }
 body.mist, body.smoke, body.haze, body.dust, body.fog, body.sand, body.ash, body.squall, body.tornado {
-  background: linear-gradient(to right, #95A5A6, #ABB2B9); 
+  background: linear-gradient(to right, #95A5A6, #ABB2B9);
 }
 
-/* Додаткові класи для температури (будуть додаватися до .weather-app) */
-.weather-app.cold {
-  border: 2px solid rgba(173, 216, 230, 0.5); /* Блакитна рамка для холоду */
-  box-shadow: 0 10px 20px rgba(0, 0, 255, 0.2); /* Синя тінь */
+/* Анімації для початкового завантаження */
+@keyframes fadeInSlideUp {
+  from {
+      opacity: 0;
+      transform: translateY(20px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
 }
 
-.weather-app.hot {
-  border: 2px solid rgba(255, 99, 71, 0.5); /* Червона рамка для спеки */
-  box-shadow: 0 10px 20px rgba(255, 0, 0, 0.2); /* Червона тінь */
+@keyframes slideDownIn {
+  from {
+      opacity: 0;
+      transform: translateY(-100%);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
 }
 
-.weather-app.moderate {
-  border: 2px solid rgba(144, 238, 144, 0.5); /* Зелена рамка для помірної */
-  box-shadow: 0 10px 20px rgba(0, 128, 0, 0.2); /* Зелена тінь */
+@keyframes scaleIn {
+  from {
+      opacity: 0;
+      transform: scale(0.9);
+  }
+  to {
+      opacity: 1;
+      transform: scale(1);
+  }
 }
+
 
 /* Адаптивність для менших екранів */
 @media (max-width: 768px) {
@@ -317,12 +365,12 @@ body.mist, body.smoke, body.haze, body.dust, body.fog, body.sand, body.ash, body
   }
 
   .forecast-cards {
-      flex-direction: column; /* Картки в стовпчик на мобільних */
+      flex-direction: column;
       align-items: center;
   }
 
   .forecast-card {
-      width: 80%; /* Зробимо їх ширшими */
+      width: 80%;
       max-width: 200px;
   }
 }

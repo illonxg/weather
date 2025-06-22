@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const rainLayer = document.getElementById('rainLayer');
     const snowLayer = document.getElementById('snowLayer');
     const body = document.body;
+    const mainHeader = document.querySelector('.main-header'); // Отримуємо шапку
+    const rainSound = document.getElementById('rainSound'); // Отримуємо аудіо-елемент
 
     // !!! ЗАМІНІТЬ 'YOUR_API_KEY' НА ВАШ СПРАВЖНІЙ API КЛЮЧ ВІД OPENWEATHERMAP !!!
     const apiKey = '0e8a885fa4f5b83849ef93b58a42e710'; 
@@ -165,95 +167,136 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function displayForecast(data) {
-        forecastCardsContainer.innerHTML = ''; 
+        forecastCardsContainer.innerHTML = '';
 
-        const uniqueDays = new Set();
-        const dailyForecasts = [];
+        const dailyForecasts = {};
 
-        data.list.forEach(forecast => {
-            const date = new Date(forecast.dt * 1000);
-            const dayKey = date.toLocaleDateString('uk-UA'); 
-            
-            if (!uniqueDays.has(dayKey) && dailyForecasts.length < 5) { 
-                dailyForecasts.push(forecast);
-                uniqueDays.add(dayKey);
+        data.list.forEach(item => {
+            const date = new Date(item.dt * 1000);
+            const day = date.toLocaleDateString('uk-UA', { weekday: 'short', day: 'numeric', month: 'short' });
+
+            if (!dailyForecasts[day]) {
+                dailyForecasts[day] = [];
+            }
+            dailyForecasts[day].push(item);
+        });
+
+        Object.keys(dailyForecasts).slice(0, 5).forEach((day, index) => {
+            const dayData = dailyForecasts[day];
+            const representativeItem = dayData.find(item => new Date(item.dt * 1000).getHours() >= 12 && new Date(item.dt * 1000).getHours() <= 15) || dayData[0];
+
+            if (representativeItem) {
+                const temp = Math.round(representativeItem.main.temp);
+                const description = representativeItem.weather[0].description;
+                const iconCode = representativeItem.weather[0].icon;
+
+                const card = document.createElement('div');
+                card.classList.add('forecast-card');
+                card.innerHTML = `
+                    <h3>${day}</h3>
+                    <img src="https://openweathermap.org/img/wn/${iconCode}@2x.png" alt="${description}">
+                    <p>${temp}°C</p>
+                    <p>${description}</p>
+                `;
+                setTimeout(() => {
+                    card.classList.add('animate-in');
+                }, 2000 + (index * 150));
+
+                forecastCardsContainer.appendChild(card);
             }
         });
-
-        dailyForecasts.forEach(forecast => {
-            const date = new Date(forecast.dt * 1000);
-            const day = date.toLocaleDateString('uk-UA', { weekday: 'short', day: 'numeric', month: 'short' });
-            
-            const tempMin = forecast.main.temp_min.toFixed(0);
-            const tempMax = forecast.main.temp_max.toFixed(0);
-            const description = forecast.weather[0].description;
-            const iconCode = forecast.weather[0].icon;
-            const iconUrl = `http://openweathermap.org/img/wn/${iconCode}@2x.png`;
-
-            const forecastCard = document.createElement('div');
-            forecastCard.classList.add('forecast-card');
-            forecastCard.innerHTML = `
-                <p class="date">${day}</p>
-                <img src="${iconUrl}" alt="${description}" title="${description}">
-                <p class="temp-range">${tempMin}°C / ${tempMax}°C</p>
-                <p>${description.charAt(0).toUpperCase() + description.slice(1)}</p>
-            `;
-            forecastCardsContainer.appendChild(forecastCard);
-        });
     }
+      
+    
+    function applyWeatherEffects(weatherType, temperature) {
+        clearWeatherEffects(); // Очищаємо попередні ефекти
 
-    function resetWeatherEffects() {
-        if (rainLayer) rainLayer.innerHTML = '';
-        if (snowLayer) snowLayer.innerHTML = '';
-        body.classList.remove('clear', 'clouds', 'rain', 'drizzle', 'thunderstorm', 'snow', 'mist', 'smoke', 'haze', 'dust', 'fog', 'sand', 'ash', 'squall', 'tornado');
-        forecastCardsContainer.innerHTML = ''; 
-        forecastDisplay.style.display = 'none'; 
-    }
+        // Додаємо класи до body та weatherContainer
+        document.body.className = '';
+        document.body.classList.add(weatherType.toLowerCase());
 
-    function applyWeatherEffects(condition) {
-        resetWeatherEffects();
-        body.classList.add(condition.toLowerCase());
+        weatherContainer.classList.add('weather-app');
+        if (temperature < 0) {
+            weatherContainer.classList.add('cold');
+        } else if (temperature > 25) {
+            weatherContainer.classList.add('hot');
+        } else {
+            weatherContainer.classList.add('moderate');
+        }
 
-        if (condition === 'Rain' || condition === 'Drizzle') {
-            if (rainLayer) createRainDrops();
-        } else if (condition === 'Snow') {
-            if (snowLayer) createSnowFlakes();
+        // Керування анімацією дощу та звуком
+        if (weatherType.toLowerCase().includes('rain') || weatherType.toLowerCase().includes('drizzle') || weatherType.toLowerCase().includes('thunderstorm')) {
+            rainLayer.style.display = 'block';
+            rainLayer.innerHTML = ''; // Очищаємо попередні краплі
+            for (let i = 0; i < 250; i++) {
+                const drop = document.createElement('div');
+                drop.classList.add('drop');
+                drop.style.left = `${Math.random() * 100}vw`;
+                drop.style.width = (1 + Math.random() * 2) + 'px';
+                drop.style.height = (8 + Math.random() * 7) + 'px';
+                drop.style.animationDuration = (0.4 + Math.random() * 0.8) + 's';
+                drop.style.animationDelay = (Math.random() * 0.5) + 's';
+                drop.style.opacity = (0.5 + Math.random() * 0.5);
+                rainLayer.appendChild(drop);
+            }
+            // Запускаємо звук дощу
+            if (rainSound.paused) {
+                rainSound.play().catch(e => console.error("Помилка відтворення звуку дощу:", e));
+            }
+        } else if (weatherType.toLowerCase().includes('snow')) {
+            snowLayer.style.display = 'block';
+            snowLayer.innerHTML = ''; // Очищаємо попередні сніжинки
+            for (let i = 0; i < 150; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.classList.add('flake');
+                snowflake.style.left = `${Math.random() * 100}vw`;
+                snowflake.style.width = (3 + Math.random() * 4) + 'px';
+                snowflake.style.height = snowflake.style.width;
+                snowflake.style.animationDuration = (3 + Math.random() * 2) + 's';
+                snowflake.style.animationDelay = (Math.random() * 2) + 's';
+                snowflake.style.opacity = (0.5 + Math.random() * 0.5);
+                snowLayer.appendChild(snowflake);
+            }
+            // Зупиняємо звук дощу, якщо йде сніг
+            if (!rainSound.paused) {
+                rainSound.pause();
+                rainSound.currentTime = 0; // Скидаємо звук на початок
+            }
+        } else {
+            // Якщо не дощ і не сніг, зупиняємо звук дощу
+            if (!rainSound.paused) {
+                rainSound.pause();
+                rainSound.currentTime = 0;
+            }
         }
     }
 
-    function createRainDrops(count = 250) { 
-        if (!rainLayer) return;
+    function clearWeatherEffects() {
+        rainLayer.style.display = 'none';
+        snowLayer.style.display = 'none';
         rainLayer.innerHTML = '';
-        for (let i = 0; i < count; i++) {
-            const drop = document.createElement('div');
-            drop.classList.add('drop');
-            drop.style.left = Math.random() * 100 + 'vw';
-            drop.style.width = (1 + Math.random() * 2) + 'px'; 
-            drop.style.height = (8 + Math.random() * 7) + 'px'; 
-            drop.style.animationDuration = (0.4 + Math.random() * 0.8) + 's'; 
-            drop.style.animationDelay = (Math.random() * 0.5) + 's';
-            drop.style.opacity = (0.5 + Math.random() * 0.5); 
-            rainLayer.appendChild(drop);
-        }
-    }
-
-    function createSnowFlakes(count = 150) { 
-        if (!snowLayer) return;
         snowLayer.innerHTML = '';
-        for (let i = 0; i < count; i++) {
-            const flake = document.createElement('div');
-            flake.classList.add('flake');
-            flake.style.left = Math.random() * 100 + 'vw';
-            flake.style.width = (3 + Math.random() * 4) + 'px'; 
-            flake.style.height = flake.style.width; 
-            flake.style.animationDuration = (3 + Math.random() * 2) + 's';
-            flake.style.animationDelay = (Math.random() * 2) + 's';
-            flake.style.opacity = (0.5 + Math.random() * 0.5);
-            snowLayer.appendChild(flake);
+
+        document.body.classList.remove('clear', 'clouds', 'rain', 'drizzle', 'thunderstorm', 'snow', 'mist', 'smoke', 'haze', 'dust', 'fog', 'sand', 'ash', 'squall', 'tornado');
+        weatherContainer.classList.remove('cold', 'hot', 'moderate');
+
+        // Завжди зупиняємо звук дощу при очищенні ефектів
+        if (!rainSound.paused) {
+            rainSound.pause();
+            rainSound.currentTime = 0;
         }
     }
 
-    // Забезпечуємо існування datalist при завантаженні сторінки
+    function runInitialAnimations() {
+        mainHeader.classList.add('animate-in');
+        weatherContainer.classList.add('animate-in');
+        cityInput.classList.add('animate-in');
+        searchButton.classList.add('animate-in');
+        weatherDisplay.classList.add('animate-in');
+        forecastDisplay.classList.add('animate-in');
+    }
+
+    runInitialAnimations();
+    clearWeatherEffects(); // Викликаємо clearWeatherEffects на початку для коректного старту
     ensureDatalistExists();
-    resetWeatherEffects(); 
 });
