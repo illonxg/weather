@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="weather-app" id="weatherContainer"> <h1>Дізнайся погоду</h1>
+    <div class="weather-app" id="weatherContainer">
+        <h1>Дізнайся погоду</h1>
         <div class="search-box">
             <input type="text" id="city-input" placeholder="Введіть місто">
             <button id="search-button">Пошук</button>
@@ -15,9 +16,15 @@
         <div class="weather-display" id="weather-display">
             <p>Введіть місто, щоб дізнатися погоду.</p>
         </div>
+
+        <div class="forecast-display" id="forecast-display">
+            <h2>Прогноз на 5 днів</h2>
+            <div class="forecast-cards" id="forecast-cards">
+                </div>
+        </div>
         <div id="rainLayer" class="weather-layer"></div>
         <div id="snowLayer" class="weather-layer"></div>
-        <p id="weatherLabel" style="display: none;"></p> 
+        <p id="weatherLabel" style="display: none;"></p>
     </div>
 
     <script src="script.js"></script>

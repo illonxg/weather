@@ -184,3 +184,217 @@ h1 {
       opacity: 0;
   }
 }
+
+html, body {
+  height: 100%; /* Розтягуємо html і body на всю висоту вікна */
+  width: 100%;  /* Розтягуємо html і body на всю ширину вікна */
+  margin: 0;
+  overflow: hidden; /* Важливо для контролю скролу, якщо додаток займає весь екран */
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(to right, #6a11cb, #2575fc); /* Дефолтний фон */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* min-height: 100vh;  Цю властивість можна прибрати, оскільки html,body вже 100% */
+  /* margin: 0; */
+  color: #fff;
+  /* overflow: hidden; */ /* Залишаємо, щоб приховати краплі/сніжинки за межами екрану */
+  position: relative; /* Для позиціонування шарів анімації */
+  transition: background 1s ease-in-out; /* Переходи для зміни фону */
+}
+
+/* Стилі фону для різних типів погоди */
+body.clear {
+  background: linear-gradient(to right, #FFD700, #FFA500); /* Сонячно: теплий, жовтий */
+}
+
+body.clouds {
+  background: linear-gradient(to right, #7F8C8D, #BDC3C7); /* Хмарно: сірі відтінки */
+}
+
+body.rain {
+  background: linear-gradient(to right, #34495E, #2C3E50); /* Дощ: темні, сині відтінки */
+}
+
+body.drizzle {
+  background: linear-gradient(to right, #5D6D7E, #7F8C8D); /* Мряка: трохи світліше за дощ */
+}
+
+body.thunderstorm {
+  background: linear-gradient(to right, #2C3E50, #1C2833); /* Гроза: дуже темний */
+}
+
+body.snow {
+  background: linear-gradient(to right, #BDC3C7, #ECF0F1); /* Сніг: світлі, білі відтінки */
+}
+
+body.mist, body.smoke, body.haze, body.dust, body.fog, body.sand, body.ash, body.squall, body.tornado {
+  background: linear-gradient(to right, #95A5A6, #ABB2B9); /* Туман та інші атмосферні явища */
+}
+
+.weather-app {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  /* width: 90%; */ /* Можна змінити або прибрати, щоб дозволити більшу ширину */
+  max-width: 600px; /* Збільшимо максимальну ширину для кращого вигляду прогнозу */
+  backdrop-filter: blur(10px);
+  z-index: 10;
+  position: relative;
+  /* Додамо ці стилі, щоб додаток міг займати більше місця на великих екранах */
+  width: 90%; /* Ширина відносно контейнера */
+  max-height: 90vh; /* Обмежимо максимальну висоту, щоб вміст не виходив за межі екрану */
+  overflow-y: auto; /* Додамо скрол, якщо вміст перевищує max-height */
+}
+
+h1 {
+  margin-bottom: 25px;
+  font-size: 2.2em;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.search-box {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 25px;
+}
+
+#city-input {
+  padding: 12px 15px;
+  border: none;
+  border-radius: 25px;
+  outline: none;
+  font-size: 1em;
+  width: 70%;
+  margin-right: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  color: #333;
+}
+
+#city-input::placeholder {
+  color: #888;
+}
+
+#search-button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 25px;
+  background-color: #00bcd4;
+  color: white;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#search-button:hover {
+  background-color: #0097a7;
+}
+
+.weather-display {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 10px;
+  text-align: left;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.weather-display p {
+  margin: 5px 0;
+  font-size: 1.1em;
+}
+
+.weather-display h2 {
+  font-size: 2em;
+  margin-bottom: 10px;
+}
+
+.weather-display .temperature {
+  font-size: 2.5em;
+  font-weight: bold;
+}
+
+/* Стилі для шарів анімації */
+.weather-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+  overflow: hidden;
+}
+
+/* Стилі для крапель дощу */
+.drop {
+  position: absolute;
+  width: 2px;
+  height: 10px;
+  background: rgba(174, 194, 224, 0.8);
+  border-radius: 50%;
+  animation: fall linear infinite;
+  transform: rotate(15deg);
+}
+
+@keyframes fall {
+  0% {
+      transform: translateY(-100px) translateX(0) rotate(15deg);
+      opacity: 0.8;
+  }
+  100% {
+      transform: translateY(100vh) translateX(30px) rotate(15deg);
+      opacity: 0;
+  }
+}
+
+/* Стилі для сніжинок */
+.flake {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  animation: snowfall linear infinite;
+}
+
+@keyframes snowfall {
+  0% {
+      transform: translateY(-20px) translateX(0);
+      opacity: 1;
+  }
+  100% {
+      transform: translateY(100vh) translateX(20px);
+      opacity: 0;
+  }
+}
+
+/* Стилі для прогнозу на декілька днів */
+.forecast-display {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 25px;
+  text-align: center;
+}
+
+.forecast-display h2 {
+  font-size: 1.8em;
+  margin-bottom: 15px;
+  color: #fff;
+}
+
+.forecast-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}

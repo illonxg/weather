@@ -2,40 +2,65 @@ document.addEventListener('DOMContentLoaded', () => {
     const cityInput = document.getElementById('city-input');
     const searchButton = document.getElementById('search-button');
     const weatherDisplay = document.getElementById('weather-display');
-    const weatherContainer = document.getElementById('weatherContainer'); // Перейменував для уникнення конфлікту
+    const forecastDisplay = document.getElementById('forecast-display');
+    const forecastCardsContainer = document.getElementById('forecast-cards');
+    const weatherContainer = document.getElementById('weatherContainer');
     const rainLayer = document.getElementById('rainLayer');
     const snowLayer = document.getElementById('snowLayer');
-    const body = document.body; // Отримуємо посилання на <body> для зміни фону
+    const body = document.body;
 
     // !!! ЗАМІНІТЬ 'YOUR_API_KEY' НА ВАШ СПРАВЖНІЙ API КЛЮЧ ВІД OPENWEATHERMAP !!!
     const apiKey = '0e8a885fa4f5b83849ef93b58a42e710';
-    const apiUrl = 'https://api.openweathermap.org/data/2.5/weather';
+    const currentApiUrl = 'https://api.openweathermap.org/data/2.5/weather';
+    const forecastApiUrl = 'https://api.openweathermap.org/data/2.5/forecast';
 
     searchButton.addEventListener('click', () => {
         const city = cityInput.value.trim();
         if (city) {
             getWeatherData(city);
+            getForecastData(city);
         } else {
             weatherDisplay.innerHTML = '<p>Будь ласка, введіть назву міста.</p>';
-            resetWeatherEffects(); // Очищаємо ефекти, якщо місто не введено
+            forecastCardsContainer.innerHTML = '';
+            forecastDisplay.style.display = 'none'; // Приховуємо блок прогнозу
+            resetWeatherEffects();
         }
     });
 
     async function getWeatherData(city) {
         try {
-            const response = await fetch(`${apiUrl}?q=${city}&appid=${apiKey}&units=metric&lang=ua`);
+            const response = await fetch(`${currentApiUrl}?q=${city}&appid=${apiKey}&units=metric&lang=ua`);
             const data = await response.json();
 
             if (response.ok) {
                 displayWeather(data);
             } else {
                 weatherDisplay.innerHTML = `<p>Місто не знайдено або помилка: ${data.message}</p>`;
-                resetWeatherEffects(); // Очищаємо ефекти при помилці
+                resetWeatherEffects();
             }
         } catch (error) {
-            console.error('Помилка отримання даних про погоду:', error);
-            weatherDisplay.innerHTML = '<p>Виникла проблема під час завантаження даних про погоду. Спробуйте пізніше.</p>';
-            resetWeatherEffects(); // Очищаємо ефекти при помилці
+            console.error('Помилка отримання даних про поточну погоду:', error);
+            weatherDisplay.innerHTML = '<p>Виникла проблема під час завантаження даних про поточну погоду. Спробуйте пізніше.</p>';
+            resetWeatherEffects();
+        }
+    }
+
+    async function getForecastData(city) {
+        try {
+            const response = await fetch(`${forecastApiUrl}?q=${city}&appid=${apiKey}&units=metric&lang=ua`);
+            const data = await response.json();
+
+            if (response.ok) {
+                displayForecast(data);
+                forecastDisplay.style.display = 'block'; // Показуємо блок прогнозу
+            } else {
+                forecastCardsContainer.innerHTML = `<p>Не вдалося отримати прогноз: ${data.message}</p>`;
+                forecastDisplay.style.display = 'none'; // Приховуємо блок прогнозу
+            }
+        } catch (error) {
+            console.error('Помилка отримання даних про прогноз погоди:', error);
+            forecastCardsContainer.innerHTML = '<p>Виникла проблема під час завантаження даних прогнозу. Спробуйте пізніше.</p>';
+            forecastDisplay.style.display = 'none'; // Приховуємо блок прогнозу
         }
     }
 
@@ -46,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const description = weather[0].description;
         const humidity = main.humidity;
         const windSpeed = wind.speed.toFixed(1);
-        const weatherCondition = weather[0].main; // Основна категорія погоди (наприклад, 'Rain', 'Clear', 'Clouds')
+        const weatherCondition = weather[0].main;
 
         weatherDisplay.innerHTML = `
             <h2>${name}</h2>
@@ -60,59 +85,97 @@ document.addEventListener('DOMContentLoaded', () => {
         applyWeatherEffects(weatherCondition);
     }
 
-    // Функція для очищення всіх погодних ефектів
+    function displayForecast(data) {
+        forecastCardsContainer.innerHTML = ''; // Очищаємо попередні картки
+
+        // Використовуємо Set для відстеження унікальних днів
+        const uniqueDays = new Set();
+        const dailyForecasts = [];
+
+        // Проходимо по всіх 3-годинних прогнозах
+        data.list.forEach(forecast => {
+            const date = new Date(forecast.dt * 1000);
+            const dayKey = date.toLocaleDateString('uk-UA'); // Використовуємо дату як ключ
+            
+            // Якщо цей день ще не був доданий
+            if (!uniqueDays.has(dayKey) && dailyForecasts.length < 5) { // Обмежуємо до 5 днів
+                dailyForecasts.push(forecast);
+                uniqueDays.add(dayKey);
+            }
+        });
+
+        // Додаємо картки для кожного унікального дня
+        dailyForecasts.forEach(forecast => {
+            const date = new Date(forecast.dt * 1000);
+            // Використовуємо 'uk-UA' для українських назв днів/місяців
+            const day = date.toLocaleDateString('uk-UA', { weekday: 'short', day: 'numeric', month: 'short' });
+            
+            // Якщо ви хочете відобразити температуру на день, а не на конкретний 3-годинний інтервал,
+            // вам потрібно буде агрегувати min/max температури за весь день.
+            // Для спрощення, тут ми беремо температуру з обраного 3-годинного інтервалу.
+            const tempMin = forecast.main.temp_min.toFixed(0);
+            const tempMax = forecast.main.temp_max.toFixed(0);
+            const description = forecast.weather[0].description;
+            const iconCode = forecast.weather[0].icon;
+            const iconUrl = `http://openweathermap.org/img/wn/${iconCode}@2x.png`; // Використовуємо @2x для більших іконок
+
+            const forecastCard = document.createElement('div');
+            forecastCard.classList.add('forecast-card');
+            forecastCard.innerHTML = `
+                <p class="date">${day}</p>
+                <img src="${iconUrl}" alt="${description}" title="${description}">
+                <p class="temp-range">${tempMin}°C / ${tempMax}°C</p>
+                <p>${description.charAt(0).toUpperCase() + description.slice(1)}</p>
+            `;
+            forecastCardsContainer.appendChild(forecastCard);
+        });
+    }
+
     function resetWeatherEffects() {
         if (rainLayer) rainLayer.innerHTML = '';
         if (snowLayer) snowLayer.innerHTML = '';
-        // Скидаємо всі класи фону на body
         body.classList.remove('clear', 'clouds', 'rain', 'drizzle', 'thunderstorm', 'snow', 'mist', 'smoke', 'haze', 'dust', 'fog', 'sand', 'ash', 'squall', 'tornado');
-        // Можливо, повернути дефолтний фон, якщо він відрізняється від початкового body
-        // body.style.background = 'linear-gradient(to right, #6a11cb, #2575fc)';
+        forecastCardsContainer.innerHTML = ''; // Очищаємо прогноз
+        forecastDisplay.style.display = 'none'; // Приховуємо блок прогнозу
     }
 
-    // Функція для застосування ефектів відповідно до погодних умов
     function applyWeatherEffects(condition) {
-        resetWeatherEffects(); // Спочатку очищаємо попередні ефекти
-
-        // Додаємо клас до <body> для зміни фону
-        // Перетворюємо у нижній регістр, бо класи CSS в нижньому регістрі
-        body.classList.add(condition.toLowerCase()); 
+        resetWeatherEffects();
+        body.classList.add(condition.toLowerCase());
 
         if (condition === 'Rain' || condition === 'Drizzle') {
             if (rainLayer) createRainDrops();
         } else if (condition === 'Snow') {
             if (snowLayer) createSnowFlakes();
         }
-        // Для інших умов (Clear, Clouds тощо) анімації не потрібні, тільки зміна фону
     }
 
     function createRainDrops(count = 100) {
-        if (!rainLayer) return; // Перевірка, чи існує rainLayer
-        rainLayer.innerHTML = ''; // Очищаємо перед створенням нових
+        if (!rainLayer) return;
+        rainLayer.innerHTML = '';
         for (let i = 0; i < count; i++) {
             const drop = document.createElement('div');
             drop.classList.add('drop');
             drop.style.left = Math.random() * 100 + 'vw';
             drop.style.animationDuration = (0.5 + Math.random()) + 's';
-            drop.style.animationDelay = (Math.random() * 0.5) + 's'; // Додаємо затримку для варіативності
+            drop.style.animationDelay = (Math.random() * 0.5) + 's';
             rainLayer.appendChild(drop);
         }
     }
 
     function createSnowFlakes(count = 50) {
-        if (!snowLayer) return; // Перевірка, чи існує snowLayer
-        snowLayer.innerHTML = ''; // Очищаємо перед створенням нових
+        if (!snowLayer) return;
+        snowLayer.innerHTML = '';
         for (let i = 0; i < count; i++) {
             const flake = document.createElement('div');
             flake.classList.add('flake');
             flake.style.left = Math.random() * 100 + 'vw';
             flake.style.animationDuration = (3 + Math.random() * 2) + 's';
-            flake.style.animationDelay = (Math.random() * 2) + 's'; // Додаємо затримку
-            flake.style.opacity = (0.5 + Math.random() * 0.5); // Варіативна прозорість
+            flake.style.animationDelay = (Math.random() * 2) + 's';
+            flake.style.opacity = (0.5 + Math.random() * 0.5);
             snowLayer.appendChild(flake);
         }
     }
 
-    // При першому завантаженні сторінки або коли не введено місто, переконайтеся, що анімацій немає
-    resetWeatherEffects();
+    resetWeatherEffects(); // Початкове очищення ефектів та приховування прогнозу
 });
